@@ -20,7 +20,7 @@ namespace STDISCM_ProblemSet3_Consumer
             InitializeComponent(); // InitializeComponent() managed by the Designer
             BuildUI(); // Manual UI logic goes here
 
-            // Uncomment this to show control scheme in PreviewPlayer
+            // Uncomment this to hide control scheme in PreviewPlayer
             //this.Load += PreviewForm_Load;
         }
 

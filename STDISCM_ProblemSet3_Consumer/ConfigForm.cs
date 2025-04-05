@@ -26,15 +26,15 @@ namespace STDISCM_ProblemSet3_Consumer
         {
             this.Text = "Consumer Configuration";
             this.Width = 300;
-            this.Height = 200;
+            this.Height = 220;
 
-            Label labelThreads = new Label() { Left = 10, Top = 20, Text = "Consumer Threads:" };
+            Label labelThreads = new Label() { Left = 10, Top = 20, AutoSize = true, Text = "Consumer Threads:" };
             TextBox textBoxThreads = new TextBox() { Left = 150, Top = 20, Width = 100, Text = "2" };
 
-            Label labelQueue = new Label() { Left = 10, Top = 60, Text = "Queue Capacity:" };
+            Label labelQueue = new Label() { Left = 10, Top = 60, AutoSize = true, Text = "Queue Capacity:" };
             TextBox textBoxQueue = new TextBox() { Left = 150, Top = 60, Width = 100, Text = "10" };
 
-            Label labelPort = new Label() { Left = 10, Top = 100, Text = "Listening Port:" };
+            Label labelPort = new Label() { Left = 10, Top = 100, AutoSize = true, Text = "Listening Port:" };
             TextBox textBoxPort = new TextBox() { Left = 150, Top = 100, Width = 100, Text = "9000" };
 
             Button btnOK = new Button() { Text = "OK", Left = 50, Width = 80, Top = 140, DialogResult = DialogResult.OK };
