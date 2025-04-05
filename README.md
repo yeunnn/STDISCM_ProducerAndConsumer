@@ -12,7 +12,7 @@ Both the producer and consumer runs on a diffrent virtual machine and communicat
 ## Slides
 https://docs.google.com/presentation/d/10XEbUDBgvXKmFlyqTkkJC8RKzks3FSEd/edit?usp=sharing&ouid=101928301120544085464&rtpof=true&sd=true
 
-## Depenencies and Prerequisites
+## Dependencies and Prerequisites
 - Use Visual Studio 2022 w/ .NET desktop development and Desktop development with C++
 - Use Oracle VirtualBox (latest version)
     - Setup a Windows 11 virtual machine
