@@ -303,28 +303,6 @@ namespace STDISCM_ProblemSet3_Consumer
                     if (longBuffer == null) return;
                     long fileSize = IPAddress.NetworkToHostOrder(BitConverter.ToInt64(longBuffer, 0));
 
-                    // --- Bonus Logic: Check if the queue is full before reading file data ---
-                    if (videoQueue.IsFull)
-                    {
-                        // Prepare a response that includes the filename and current queue size
-                        string responseMsg = $"QUEUE_FULL:{fileName}:QueueSize:{videoQueue.Count}";
-                        byte[] response = Encoding.UTF8.GetBytes(responseMsg);
-                        ns.Write(response, 0, response.Length);
-                        ns.Flush(); // Ensure the response is sent immediately
-                                    // Log (using Console.WriteLine for debugging; replace with your preferred logging)
-                        Console.WriteLine($"Queue is full. Dropping file: {fileName}. Current queue size: {videoQueue.Count}");
-                        return; // Drop this file without reading file data
-                    }
-                    else
-                    {
-                        // Signal OK along with the current queue size so the producer knows it's accepted
-                        string responseMsg = $"OK:QueueSize:{videoQueue.Count}";
-                        byte[] response = Encoding.UTF8.GetBytes(responseMsg);
-                        ns.Write(response, 0, response.Length);
-                        ns.Flush();
-                    }
-                    // --- End Bonus Logic ---
-
                     // Now, read the file data.
                     byte[] fileData = ReadExact(ns, (int)fileSize);
                     if (fileData == null) return;
@@ -333,12 +311,21 @@ namespace STDISCM_ProblemSet3_Consumer
 
                     // Try to enqueue the video.
                     bool enqueued = videoQueue.TryEnqueue(vu);
+                    string responseMsg;
                     if (!enqueued)
                     {
-                        // This block should rarely be hit since we already checked IsFull,
-                        // but log it if it does occur.
-                        Console.WriteLine($"Unexpectedly, queue became full after reading file data. Dropping file: {fileName}. Current queue size: {videoQueue.Count}");
+                        // File dropped because the queue is full
+                        responseMsg = $"QUEUE_FULL: Dropping file: {fileName}";
                     }
+                    else
+                    {
+                        responseMsg = $"OK: File accepted: {fileName}";
+                    }
+
+                    // Send final response after processing
+                    byte[] response = Encoding.UTF8.GetBytes(responseMsg);
+                    ns.Write(response, 0, response.Length);
+                    ns.Flush();
                 }
             }
             catch (Exception ex)

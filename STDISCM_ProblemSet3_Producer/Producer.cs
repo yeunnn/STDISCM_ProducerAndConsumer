@@ -117,54 +117,41 @@ namespace STDISCM_ProblemSet3_Producer
         }
         static void SendFile(string filePath)
         {
-            // Get file name as UTF8 bytes.
-            byte[] fileNameBytes = Encoding.UTF8.GetBytes(Path.GetFileName(filePath));
-            int fileNameLength = fileNameBytes.Length;
-            // Read entire file.
-            byte[] fileData = File.ReadAllBytes(filePath);
-            long fileSize = fileData.Length;
-
-            // Prepare header:
-            // 4 bytes: file name length (network order)
-            byte[] fileNameLengthBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(fileNameLength));
-            // 8 bytes: file size (network order)
-            byte[] fileSizeBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(fileSize));
-
-            using (TcpClient client = new TcpClient())
+            try
             {
-                client.Connect(consumerIP, consumerPort);
-                using (NetworkStream ns = client.GetStream())
+                byte[] fileNameBytes = Encoding.UTF8.GetBytes(Path.GetFileName(filePath));
+                int fileNameLength = fileNameBytes.Length;
+                byte[] fileData = File.ReadAllBytes(filePath);
+                long fileSize = fileData.Length;
+
+                byte[] fileNameLengthBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(fileNameLength));
+                byte[] fileSizeBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(fileSize));
+
+                using (TcpClient client = new TcpClient())
                 {
-                    // Send header: file name length, file name, and file size.
-                    ns.Write(fileNameLengthBytes, 0, fileNameLengthBytes.Length);
-                    ns.Write(fileNameBytes, 0, fileNameBytes.Length);
-                    ns.Write(fileSizeBytes, 0, fileSizeBytes.Length);
-
-                    // Wait for a response from the consumer.
-                    ns.ReadTimeout = 5000; 
-                    byte[] responseBuffer = new byte[20];
-                    int bytesRead = ns.Read(responseBuffer, 0, responseBuffer.Length);
-                    string response = Encoding.UTF8.GetString(responseBuffer, 0, bytesRead);
-
-                    Console.WriteLine($"Received response from consumer: {response}");
-
-                    if (response.StartsWith("QUEUE_FULL:"))
+                    client.Connect(consumerIP, consumerPort);
+                    using (NetworkStream ns = client.GetStream())
                     {
-                        // Extract the dropped filename and current queue size from the response.
-                        // Expected format: "QUEUE_FULL:<filename>:QueueSize:<number>"
-                        Console.WriteLine($"Consumer notified: {response}");
-                        return; // Skip sending file data.
-                    }
-                    else if (response.StartsWith("OK:"))
-                    {
-                        // Proceed with sending the file data.
+                        // Send header
+                        ns.Write(fileNameLengthBytes, 0, fileNameLengthBytes.Length);
+                        ns.Write(fileNameBytes, 0, fileNameBytes.Length);
+                        ns.Write(fileSizeBytes, 0, fileSizeBytes.Length);
+
+                        // Send file data immediately
                         ns.Write(fileData, 0, fileData.Length);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Unexpected response from consumer: " + response);
+                        ns.Flush();
+
+                        // Then wait for a response (e.g., OK or QUEUE_FULL)
+                        byte[] responseBuffer = new byte[100];
+                        int bytesRead = ns.Read(responseBuffer, 0, responseBuffer.Length);
+                        string response = Encoding.UTF8.GetString(responseBuffer, 0, bytesRead);
+                        Console.WriteLine($"\nReceived response from consumer: {response}\n");
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending file {filePath}: {ex.Message}");
             }
         }
 
