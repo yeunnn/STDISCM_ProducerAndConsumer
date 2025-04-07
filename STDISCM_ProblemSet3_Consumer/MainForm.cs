@@ -307,10 +307,11 @@ namespace STDISCM_ProblemSet3_Consumer
                     // Check if the queue is full:
                     if (videoQueue.IsFull)
                     {
-                        // Notify the producer that the queue is full.
-                        byte[] response = Encoding.UTF8.GetBytes("QUEUE_FULL");
+                        // Notify the producer that the queue is full with the filename info.
+                        string responseMsg = "QUEUE_FULL:" + fileName;
+                        byte[] response = Encoding.UTF8.GetBytes(responseMsg);
                         ns.Write(response, 0, response.Length);
-                        Console.WriteLine("Queue is full. Notifying producer and dropping file: " + fileName);
+                        Console.WriteLine($"Queue is full. Dropping file: {fileName} and notifying producer.");
                         return; // Do not proceed further.
                     }
                     else

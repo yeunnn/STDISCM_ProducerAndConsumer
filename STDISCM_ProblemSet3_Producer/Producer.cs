@@ -1,4 +1,7 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿// Argamosa, Daniel Cedric (S14)
+// Donato, Adriel Joseph (S12)
+
+// See https://aka.ms/new-console-template for more information
 // Console.WriteLine("Hello, World!");
 
 using System;
@@ -140,19 +143,28 @@ namespace STDISCM_ProblemSet3_Producer
 
                     // Wait for a response from the consumer.
                     ns.ReadTimeout = 2000; // 2-second timeout (adjust as needed)
-                    byte[] responseBuffer = new byte[20];
+                    byte[] responseBuffer = new byte[100];
                     int bytesRead = ns.Read(responseBuffer, 0, responseBuffer.Length);
                     string response = Encoding.UTF8.GetString(responseBuffer, 0, bytesRead);
-                    if (response == "QUEUE_FULL")
+
+                    if (response.StartsWith("QUEUE_FULL:"))
                     {
-                        Console.WriteLine("Consumer's queue is full. File not sent: " + filePath);
-                        return; // Skip sending file data, or you might retry later.
+                        // Extract the filename from the response
+                        string droppedFileName = response.Substring("QUEUE_FULL:".Length);
+                        Console.WriteLine($"Consumer's queue is full. Dropped file: {droppedFileName}");
+                        return; // Skip sending file data.
                     }
-                    // If response is "OK", proceed with sending file data.
-                    ns.Write(fileData, 0, fileData.Length);
+                    else if (response == "OK")
+                    {
+                        // Response OK: proceed with sending the file data.
+                        ns.Write(fileData, 0, fileData.Length);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Unexpected response from consumer: " + response);
+                    }
                 }
             }
         }
-
     }
 }

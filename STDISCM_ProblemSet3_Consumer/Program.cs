@@ -1,3 +1,6 @@
+// Argamosa, Daniel Cedric (S14)
+// Donato, Adriel Joseph (S12)
+
 using System.Text;
 
 namespace STDISCM_ProblemSet3_Consumer
