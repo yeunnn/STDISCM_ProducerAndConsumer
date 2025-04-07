@@ -18,34 +18,69 @@ namespace STDISCM_ProblemSet3_Producer
 
         static void Main(string[] args)
         {
-            // Prompt for Consumer server IP and port
-            Console.Write("Enter Consumer IP: ");
-            consumerIP = Console.ReadLine();
-            Console.Write("Enter Consumer Port: ");
-            if (!int.TryParse(Console.ReadLine(), out consumerPort))
+            // IP address validation
+            while (true)
             {
-                Console.WriteLine("Invalid port number.");
-                return;
+                Console.Write("Enter Consumer IP: ");
+                consumerIP = Console.ReadLine();
+                if (!System.Net.IPAddress.TryParse(consumerIP, out _))
+                {
+                    Console.WriteLine("Invalid IP address. Try again.");
+                }
+                else break;
             }
 
-            // Prompt for the number of producer threads (directories)
-            Console.Write("Enter number of producer threads (directories): ");
-            int numThreads;
-            if (!int.TryParse(Console.ReadLine(), out numThreads) || numThreads < 1)
+            // Port validation
+            while (true)
             {
-                Console.WriteLine("Invalid number.");
-                return;
+                Console.Write("Enter Consumer Port: ");
+                if (!int.TryParse(Console.ReadLine(), out consumerPort) || consumerPort < 1 || consumerPort > 65535)
+                {
+                    Console.WriteLine("Invalid port number. Enter a number between 1 and 65535.");
+                }
+                else break;
             }
+
+            // Producer thread count validation
+            int numThreads;
+            while (true)
+            {
+                Console.Write("Enter number of producer threads (directories): ");
+                if (!int.TryParse(Console.ReadLine(), out numThreads) || numThreads < 1)
+                {
+                    Console.WriteLine("Invalid number of threads. Must be 1 or more.");
+                }
+                else break;
+            }
+
+            // Get and validate directories
             directories = new string[numThreads];
             for (int i = 0; i < numThreads; i++)
             {
-                Console.Write($"Enter path for directory {i + 1}: ");
-                directories[i] = Console.ReadLine();
+                while (true)
+                {
+                    Console.Write($"Enter path for directory {i + 1}: ");
+                    string dir = Console.ReadLine();
+
+                    if (string.IsNullOrWhiteSpace(dir))
+                    {
+                        Console.WriteLine("Directory path cannot be empty.");
+                    }
+                    else if (!Directory.Exists(dir))
+                    {
+                        Console.WriteLine("Directory does not exist. Try again.");
+                    }
+                    else
+                    {
+                        directories[i] = dir;
+                        break;
+                    }
+                }
             }
 
-            // Start one thread per directory
-            Thread[] threads = new Thread[directories.Length];
-            for (int i = 0; i < directories.Length; i++)
+            // Launch threads for each directory
+            Thread[] threads = new Thread[numThreads];
+            for (int i = 0; i < numThreads; i++)
             {
                 string dir = directories[i];
                 threads[i] = new Thread(() => ProcessDirectory(dir));
@@ -56,25 +91,20 @@ namespace STDISCM_ProblemSet3_Producer
             {
                 t.Join();
             }
+
             Console.WriteLine("All files processed. Press any key to exit.");
             Console.ReadKey();
         }
 
         static void ProcessDirectory(string directory)
         {
-            if (!Directory.Exists(directory))
-            {
-                Console.WriteLine($"Directory {directory} does not exist.");
-                return;
-            }
-
             string[] files = Directory.GetFiles(directory);
             foreach (var file in files)
             {
                 try
                 {
                     Console.WriteLine($"Sending file: {file}");
-                    SendFile(file);
+                    SendFile(file); // Your networking logic here
                 }
                 catch (Exception ex)
                 {

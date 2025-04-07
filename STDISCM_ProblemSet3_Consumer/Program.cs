@@ -1,5 +1,4 @@
-// STDISCM Problem Set 3
-// The main entry point for the application.
+using System.Text;
 
 namespace STDISCM_ProblemSet3_Consumer
 {
@@ -11,10 +10,6 @@ namespace STDISCM_ProblemSet3_Consumer
         [STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
-            //ApplicationConfiguration.Initialize();
-            //Application.Run(new Form1());
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -22,8 +17,51 @@ namespace STDISCM_ProblemSet3_Consumer
             ConfigForm configForm = new ConfigForm();
             if (configForm.ShowDialog() == DialogResult.OK)
             {
-                Application.Run(new MainForm(configForm.ConsumerThreadsCount, configForm.QueueCapacity, configForm.ListeningPort));
+                // Validate the inputs before proceeding
+                string validationMessage = ValidateInputs(configForm);
+                if (string.IsNullOrEmpty(validationMessage))
+                {
+                    Application.Run(new MainForm(configForm.ConsumerThreadsCount, configForm.QueueCapacity, configForm.ListeningPort));
+                }
+                else
+                {
+                    MessageBox.Show(validationMessage, "Input Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
+        }
+
+        // Method to validate inputs from the ConfigForm
+        static string ValidateInputs(ConfigForm configForm)
+        {
+            StringBuilder errorMessage = new StringBuilder();
+
+            if (configForm.ConsumerThreadsCount == 0 || configForm.QueueCapacity == 0 || configForm.ListeningPort == 0)
+            {
+                errorMessage.AppendLine("None of the inputs can be zero or a character");
+            }
+            else
+            {
+                // Validate ConsumerThreadsCount (must be positive)
+                if (configForm.ConsumerThreadsCount <= 0)
+                {
+                    errorMessage.AppendLine("Consumer Threads Count must be a positive number");
+                }
+
+                // Validate QueueCapacity (must be positive)
+                if (configForm.QueueCapacity <= 0)
+                {
+                    errorMessage.AppendLine("Queue Capacity must be a positive number");
+                }
+
+                // Validate ListeningPort (must be a valid port number, between 1 and 65535)
+                if (configForm.ListeningPort < 1 || configForm.ListeningPort > 65535)
+                {
+                    errorMessage.AppendLine("Listening Port must be a valid port number between 1 and 65535");
+                }
+            }
+
+            // If no validation errors, return an empty string
+            return errorMessage.ToString();
         }
     }
 }

@@ -52,10 +52,7 @@ namespace STDISCM_ProblemSet3_Consumer
                     this.DialogResult = DialogResult.OK;
                     this.Close();
                 }
-                else
-                {
-                    MessageBox.Show("Please enter valid numbers.");
-                }
+        
             };
 
             this.Controls.Add(labelThreads);
