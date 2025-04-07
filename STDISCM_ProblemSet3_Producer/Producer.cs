@@ -133,13 +133,26 @@ namespace STDISCM_ProblemSet3_Producer
                 client.Connect(consumerIP, consumerPort);
                 using (NetworkStream ns = client.GetStream())
                 {
-                    // Send header then file bytes
+                    // Send header: file name length, file name, and file size.
                     ns.Write(fileNameLengthBytes, 0, fileNameLengthBytes.Length);
                     ns.Write(fileNameBytes, 0, fileNameBytes.Length);
                     ns.Write(fileSizeBytes, 0, fileSizeBytes.Length);
+
+                    // Wait for a response from the consumer.
+                    ns.ReadTimeout = 2000; // 2-second timeout (adjust as needed)
+                    byte[] responseBuffer = new byte[20];
+                    int bytesRead = ns.Read(responseBuffer, 0, responseBuffer.Length);
+                    string response = Encoding.UTF8.GetString(responseBuffer, 0, bytesRead);
+                    if (response == "QUEUE_FULL")
+                    {
+                        Console.WriteLine("Consumer's queue is full. File not sent: " + filePath);
+                        return; // Skip sending file data, or you might retry later.
+                    }
+                    // If response is "OK", proceed with sending file data.
                     ns.Write(fileData, 0, fileData.Length);
                 }
             }
         }
+
     }
 }

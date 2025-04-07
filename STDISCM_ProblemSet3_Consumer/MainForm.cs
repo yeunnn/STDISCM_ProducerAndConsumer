@@ -23,12 +23,24 @@ namespace STDISCM_ProblemSet3_Consumer
     {
         private Queue<T> queue = new Queue<T>();
         private int capacity;
-        private object lockObj = new object();
+        internal object lockObj = new object();
         private AutoResetEvent itemEnqueued = new AutoResetEvent(false);
 
         public BoundedQueue(int capacity)
         {
             this.capacity = capacity;
+        }
+
+        // Expose Count
+        public int Count
+        {
+            get { lock (lockObj) { return queue.Count; } }
+        }
+
+        // Expose a helper property to check if the queue is full
+        public bool IsFull
+        {
+            get { lock (lockObj) { return queue.Count >= capacity; } }
         }
 
         // Try to enqueue an item; return false if the queue is full.
@@ -62,6 +74,7 @@ namespace STDISCM_ProblemSet3_Consumer
             }
         }
     }
+
     public partial class MainForm : Form
     {
         private ListView listViewVideos;
@@ -290,7 +303,25 @@ namespace STDISCM_ProblemSet3_Consumer
                     if (longBuffer == null) return;
                     long fileSize = IPAddress.NetworkToHostOrder(BitConverter.ToInt64(longBuffer, 0));
 
-                    // Read the file data
+                    // --- Begin new bonus logic ---
+                    // Check if the queue is full:
+                    if (videoQueue.IsFull)
+                    {
+                        // Notify the producer that the queue is full.
+                        byte[] response = Encoding.UTF8.GetBytes("QUEUE_FULL");
+                        ns.Write(response, 0, response.Length);
+                        Console.WriteLine("Queue is full. Notifying producer and dropping file: " + fileName);
+                        return; // Do not proceed further.
+                    }
+                    else
+                    {
+                        // Signal OK so that the producer knows to send the file data.
+                        byte[] response = Encoding.UTF8.GetBytes("OK");
+                        ns.Write(response, 0, response.Length);
+                    }
+                    // --- End bonus logic ---
+
+                    // Now, read the file data
                     byte[] fileData = ReadExact(ns, (int)fileSize);
                     if (fileData == null) return;
 
