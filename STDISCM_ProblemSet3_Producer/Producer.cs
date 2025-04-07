@@ -115,13 +115,12 @@ namespace STDISCM_ProblemSet3_Producer
                 }
             }
         }
-
         static void SendFile(string filePath)
         {
-            // Get file name as UTF8 bytes
+            // Get file name as UTF8 bytes.
             byte[] fileNameBytes = Encoding.UTF8.GetBytes(Path.GetFileName(filePath));
             int fileNameLength = fileNameBytes.Length;
-            // Read entire file
+            // Read entire file.
             byte[] fileData = File.ReadAllBytes(filePath);
             long fileSize = fileData.Length;
 
@@ -142,21 +141,23 @@ namespace STDISCM_ProblemSet3_Producer
                     ns.Write(fileSizeBytes, 0, fileSizeBytes.Length);
 
                     // Wait for a response from the consumer.
-                    ns.ReadTimeout = 2000; // 2-second timeout (adjust as needed)
-                    byte[] responseBuffer = new byte[100];
+                    ns.ReadTimeout = 5000; 
+                    byte[] responseBuffer = new byte[20];
                     int bytesRead = ns.Read(responseBuffer, 0, responseBuffer.Length);
                     string response = Encoding.UTF8.GetString(responseBuffer, 0, bytesRead);
 
+                    Console.WriteLine($"Received response from consumer: {response}");
+
                     if (response.StartsWith("QUEUE_FULL:"))
                     {
-                        // Extract the filename from the response
-                        string droppedFileName = response.Substring("QUEUE_FULL:".Length);
-                        Console.WriteLine($"Consumer's queue is full. Dropped file: {droppedFileName}");
+                        // Extract the dropped filename and current queue size from the response.
+                        // Expected format: "QUEUE_FULL:<filename>:QueueSize:<number>"
+                        Console.WriteLine($"Consumer notified: {response}");
                         return; // Skip sending file data.
                     }
-                    else if (response == "OK")
+                    else if (response.StartsWith("OK:"))
                     {
-                        // Response OK: proceed with sending the file data.
+                        // Proceed with sending the file data.
                         ns.Write(fileData, 0, fileData.Length);
                     }
                     else
@@ -166,5 +167,6 @@ namespace STDISCM_ProblemSet3_Producer
                 }
             }
         }
+
     }
 }

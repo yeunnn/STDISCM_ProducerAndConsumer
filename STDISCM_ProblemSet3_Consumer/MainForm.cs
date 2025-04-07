@@ -303,35 +303,41 @@ namespace STDISCM_ProblemSet3_Consumer
                     if (longBuffer == null) return;
                     long fileSize = IPAddress.NetworkToHostOrder(BitConverter.ToInt64(longBuffer, 0));
 
-                    // --- Begin new bonus logic ---
-                    // Check if the queue is full:
+                    // --- Bonus Logic: Check if the queue is full before reading file data ---
                     if (videoQueue.IsFull)
                     {
-                        // Notify the producer that the queue is full with the filename info.
-                        string responseMsg = "QUEUE_FULL:" + fileName;
+                        // Prepare a response that includes the filename and current queue size
+                        string responseMsg = $"QUEUE_FULL:{fileName}:QueueSize:{videoQueue.Count}";
                         byte[] response = Encoding.UTF8.GetBytes(responseMsg);
                         ns.Write(response, 0, response.Length);
-                        Console.WriteLine($"Queue is full. Dropping file: {fileName} and notifying producer.");
-                        return; // Do not proceed further.
+                        ns.Flush(); // Ensure the response is sent immediately
+                                    // Log (using Console.WriteLine for debugging; replace with your preferred logging)
+                        Console.WriteLine($"Queue is full. Dropping file: {fileName}. Current queue size: {videoQueue.Count}");
+                        return; // Drop this file without reading file data
                     }
                     else
                     {
-                        // Signal OK so that the producer knows to send the file data.
-                        byte[] response = Encoding.UTF8.GetBytes("OK");
+                        // Signal OK along with the current queue size so the producer knows it's accepted
+                        string responseMsg = $"OK:QueueSize:{videoQueue.Count}";
+                        byte[] response = Encoding.UTF8.GetBytes(responseMsg);
                         ns.Write(response, 0, response.Length);
+                        ns.Flush();
                     }
-                    // --- End bonus logic ---
+                    // --- End Bonus Logic ---
 
-                    // Now, read the file data
+                    // Now, read the file data.
                     byte[] fileData = ReadExact(ns, (int)fileSize);
                     if (fileData == null) return;
 
                     VideoUpload vu = new VideoUpload { FileName = fileName, Data = fileData };
 
+                    // Try to enqueue the video.
                     bool enqueued = videoQueue.TryEnqueue(vu);
                     if (!enqueued)
                     {
-                        Console.WriteLine("Queue full. Dropping file: " + fileName);
+                        // This block should rarely be hit since we already checked IsFull,
+                        // but log it if it does occur.
+                        Console.WriteLine($"Unexpectedly, queue became full after reading file data. Dropping file: {fileName}. Current queue size: {videoQueue.Count}");
                     }
                 }
             }
