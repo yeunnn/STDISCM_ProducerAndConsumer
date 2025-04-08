@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("STDISCM_ProblemSet3_Consumer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7581e28e5e7fd35971d7574b110488fbd4b166bd")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8279908ef3b2f03bac30e634f3cdea4055385353")]
 [assembly: System.Reflection.AssemblyProductAttribute("STDISCM_ProblemSet3_Consumer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("STDISCM_ProblemSet3_Consumer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

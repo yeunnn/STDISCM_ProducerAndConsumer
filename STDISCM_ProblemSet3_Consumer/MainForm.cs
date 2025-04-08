@@ -445,6 +445,9 @@ namespace STDISCM_ProblemSet3_Consumer
                 File.WriteAllBytes(filePath, vu.Data);
                 Console.WriteLine("Saved file: " + vu.FileName);
 
+                // Introduce an artificial delay because otherwise it would process too fast
+                Thread.Sleep(1000);
+
                 // Update the ListView on the UI thread.
                 this.Invoke((MethodInvoker)delegate {
                     if (!listViewVideos.Items.ContainsKey(vu.FileName))
