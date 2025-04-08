@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "qA7Sdot/hStkuUOVYhqAnPolDJSFQOi/uJG9P/J7LpYitz0Y3dcDKl/iKxrdI9PW8MvLSPJfogcJi5o50zf5DA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Daniel\\Documents\\GitHub\\STDISCM_ProducerAndConsumer\\STDISCM_ProblemSet3_Consumer\\STDISCM_ProblemSet3_Consumer.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Daniel\\.nuget\\packages\\microsoft.windows.sdk.net.ref\\10.0.19041.31\\microsoft.windows.sdk.net.ref.10.0.19041.31.nupkg.sha512"
+  ],
+  "logs": []
+}

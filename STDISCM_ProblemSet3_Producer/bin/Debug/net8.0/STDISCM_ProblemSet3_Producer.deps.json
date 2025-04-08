@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "STDISCM_ProblemSet3_Producer/1.0.0": {
+        "runtime": {
+          "STDISCM_ProblemSet3_Producer.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "STDISCM_ProblemSet3_Producer/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

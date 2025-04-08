@@ -99,6 +99,13 @@ namespace STDISCM_ProblemSet3_Producer
             Console.ReadKey();
         }
 
+        /*
+        * Processes each directory by sending files to the consumer
+        *
+        * @param directory - Path to the directory to process
+        *
+        * @return void
+        */
         static void ProcessDirectory(string directory)
         {
             string[] files = Directory.GetFiles(directory);
@@ -115,6 +122,15 @@ namespace STDISCM_ProblemSet3_Producer
                 }
             }
         }
+
+        /*
+        * Sends a file to the consumer over the network
+        * Compresses the file if it exceeds 20MB before sending
+        *
+        * @param filePath - The file path to be sent
+        *
+        * @return void
+        */
         static void SendFile(string filePath)
         {
             try
@@ -176,6 +192,16 @@ namespace STDISCM_ProblemSet3_Producer
                 Console.WriteLine($"Error sending file {filePath}: {ex.Message}");
             }
         }
+
+        /*
+        * Compresses a video file using ffmpeg to reduce its size if it exceeds a certain threshold
+        *
+        * @param inputPath - Path to the video file to be compressed
+        * @param compressedData - The compressed video data
+        * @param newSize - The size of the compressed video data
+        *
+        * @return true if compression is successful, false if compression fails
+        */
         static bool CompressVideo(string inputPath, out byte[] compressedData, out long newSize)
         {
             // Path to ffmpeg.exe inside the repo structure

@@ -1,0 +1,15 @@
+C:\Users\Daniel\Documents\GitHub\STDISCM_ProducerAndConsumer\STDISCM_ProblemSet3_Producer\bin\Debug\net8.0\STDISCM_ProblemSet3_Producer.exe
+C:\Users\Daniel\Documents\GitHub\STDISCM_ProducerAndConsumer\STDISCM_ProblemSet3_Producer\bin\Debug\net8.0\STDISCM_ProblemSet3_Producer.deps.json
+C:\Users\Daniel\Documents\GitHub\STDISCM_ProducerAndConsumer\STDISCM_ProblemSet3_Producer\bin\Debug\net8.0\STDISCM_ProblemSet3_Producer.runtimeconfig.json
+C:\Users\Daniel\Documents\GitHub\STDISCM_ProducerAndConsumer\STDISCM_ProblemSet3_Producer\bin\Debug\net8.0\STDISCM_ProblemSet3_Producer.dll
+C:\Users\Daniel\Documents\GitHub\STDISCM_ProducerAndConsumer\STDISCM_ProblemSet3_Producer\bin\Debug\net8.0\STDISCM_ProblemSet3_Producer.pdb
+C:\Users\Daniel\Documents\GitHub\STDISCM_ProducerAndConsumer\STDISCM_ProblemSet3_Producer\obj\Debug\net8.0\STDISCM_ProblemSet3_Producer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Daniel\Documents\GitHub\STDISCM_ProducerAndConsumer\STDISCM_ProblemSet3_Producer\obj\Debug\net8.0\STDISCM_ProblemSet3_Producer.AssemblyInfoInputs.cache
+C:\Users\Daniel\Documents\GitHub\STDISCM_ProducerAndConsumer\STDISCM_ProblemSet3_Producer\obj\Debug\net8.0\STDISCM_ProblemSet3_Producer.AssemblyInfo.cs
+C:\Users\Daniel\Documents\GitHub\STDISCM_ProducerAndConsumer\STDISCM_ProblemSet3_Producer\obj\Debug\net8.0\STDISCM_ProblemSet3_Producer.csproj.CoreCompileInputs.cache
+C:\Users\Daniel\Documents\GitHub\STDISCM_ProducerAndConsumer\STDISCM_ProblemSet3_Producer\obj\Debug\net8.0\STDISCM_ProblemSet3_Producer.sourcelink.json
+C:\Users\Daniel\Documents\GitHub\STDISCM_ProducerAndConsumer\STDISCM_ProblemSet3_Producer\obj\Debug\net8.0\STDISCM_ProblemSet3_Producer.dll
+C:\Users\Daniel\Documents\GitHub\STDISCM_ProducerAndConsumer\STDISCM_ProblemSet3_Producer\obj\Debug\net8.0\refint\STDISCM_ProblemSet3_Producer.dll
+C:\Users\Daniel\Documents\GitHub\STDISCM_ProducerAndConsumer\STDISCM_ProblemSet3_Producer\obj\Debug\net8.0\STDISCM_ProblemSet3_Producer.pdb
+C:\Users\Daniel\Documents\GitHub\STDISCM_ProducerAndConsumer\STDISCM_ProblemSet3_Producer\obj\Debug\net8.0\STDISCM_ProblemSet3_Producer.genruntimeconfig.cache
+C:\Users\Daniel\Documents\GitHub\STDISCM_ProducerAndConsumer\STDISCM_ProblemSet3_Producer\obj\Debug\net8.0\ref\STDISCM_ProblemSet3_Producer.dll

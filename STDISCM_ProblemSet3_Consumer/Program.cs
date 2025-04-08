@@ -33,7 +33,13 @@ namespace STDISCM_ProblemSet3_Consumer
             }
         }
 
-        // Method to validate inputs from the ConfigForm
+        /*
+        * Validates the inputs from the ConfigForm to ensure they meet the required criteria
+        *
+        * @param configForm - The configuration form containing the user inputs
+        *
+        * @return - A string with validation error messages, or an empty string if the inputs are valid
+        */
         static string ValidateInputs(ConfigForm configForm)
         {
             StringBuilder errorMessage = new StringBuilder();

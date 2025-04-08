@@ -137,6 +137,9 @@ namespace STDISCM_ProblemSet3_Consumer
             }
         }
 
+        /*
+        * Builds the user interface for the consumer application
+        */
         private void BuildUI()
         {
             this.listViewVideos = new ListView();
@@ -170,7 +173,12 @@ namespace STDISCM_ProblemSet3_Consumer
             this.ResumeLayout(false);
         }
 
-        // MouseMove event handler to perform a hit test.
+        /*
+        * Handles mouse movement over the ListView to show video previews
+        *
+        * @param sender - The object that raised the event
+        * @param e - The mouse event arguments
+        */
         private void listViewVideos_MouseMove(object sender, MouseEventArgs e)
         {
             // If a full playback is in progress (if you want to prevent preview during full playback), you can check a flag here. (Setup is in always allow preview)
@@ -222,6 +230,12 @@ namespace STDISCM_ProblemSet3_Consumer
             }
         }
 
+        /*
+        * Handles mouse click events on the ListView to start full playback of a selected video
+        *
+        * @param sender - The object that raised the event
+        * @param e - The mouse event arguments
+        */
         private void listViewVideos_MouseClick(object sender, MouseEventArgs e)
         {
             var hitTestInfo = listViewVideos.HitTest(e.X, e.Y);
@@ -246,7 +260,12 @@ namespace STDISCM_ProblemSet3_Consumer
             }
         }
 
-        // Stop the preview when the timer ticks (after 10 seconds).
+        /*
+        * Stops the preview when the timer ticks (after 10 seconds)
+        *
+        * @param sender - The object that raised the event
+        * @param e - The event arguments
+        */
         private void previewTimer_Tick(object sender, EventArgs e)
         {
             previewTimer.Stop();
@@ -259,7 +278,9 @@ namespace STDISCM_ProblemSet3_Consumer
         }
 
 
-        // Network listener that accepts incoming video uploads.
+        /*
+        * Starts the network listener to accept incoming video uploads
+        */
         private void StartListener()
         {
             TcpListener listener = new TcpListener(IPAddress.Any, listeningPort);
@@ -281,7 +302,11 @@ namespace STDISCM_ProblemSet3_Consumer
             }
         }
 
-        // Handle an individual client upload.
+        /*
+        * Handles an individual client upload by receiving the video file and enqueuing it for processing
+        *
+        * @param client - The TcpClient representing the connection to the producer
+        */
         private void HandleClient(TcpClient client)
         {
             try
@@ -359,6 +384,13 @@ namespace STDISCM_ProblemSet3_Consumer
             }
         }
 
+        /*
+        * Generates a unique file name if a file with the same name already exists in the "UploadedVideos" folder
+        *
+        * @param originalFileName - The original name of the video file
+        *
+        * @return - A unique file name
+        */
         private string GetUniqueFileName(string originalFileName)
         {
             string folder = "UploadedVideos";
@@ -376,7 +408,14 @@ namespace STDISCM_ProblemSet3_Consumer
             return newFileName;
         }
 
-        // Helper method to read an exact number of bytes from the stream.
+        /*
+        * Reads an exact number of bytes from the network stream
+        *
+        * @param ns - The network stream to read from
+        * @param size - The number of bytes to read
+        *
+        * @return - The byte array containing the read data
+        */
         private byte[] ReadExact(NetworkStream ns, int size)
         {
             byte[] buffer = new byte[size];
@@ -393,7 +432,9 @@ namespace STDISCM_ProblemSet3_Consumer
             return buffer;
         }
 
-        // Worker thread that processes the video queue.
+        /*
+        * Worker thread that processes the video queue by saving videos to disk and updating the UI
+        */
         private void ProcessQueue()
         {
             while (true)
@@ -416,6 +457,9 @@ namespace STDISCM_ProblemSet3_Consumer
             }
         }
 
+        /*
+        * Loads existing videos from the "UploadedVideos" folder into the ListView
+        */
         private void LoadExistingVideos()
         {
             // Ensure the folder exists
