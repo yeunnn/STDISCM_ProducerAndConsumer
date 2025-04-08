@@ -296,7 +296,7 @@ namespace STDISCM_ProblemSet3_Consumer
                     // Read the file name
                     byte[] nameBuffer = ReadExact(ns, fileNameLength);
                     if (nameBuffer == null) return;
-                    string fileName = Encoding.UTF8.GetString(nameBuffer);
+                    string originalFileName = Encoding.UTF8.GetString(nameBuffer);
 
                     // Read file size (8 bytes)
                     byte[] longBuffer = ReadExact(ns, 8);
@@ -307,22 +307,43 @@ namespace STDISCM_ProblemSet3_Consumer
                     byte[] fileData = ReadExact(ns, (int)fileSize);
                     if (fileData == null) return;
 
-                    VideoUpload vu = new VideoUpload { FileName = fileName, Data = fileData };
+                    // Duplicate detection: Check if a file with the same name already exists in "UploadedVideos"
+                    string finalFileName = originalFileName;
+                    string filePath = Path.Combine("UploadedVideos", finalFileName);
+                    string duplicateMsg = "";
+                    if (File.Exists(filePath))
+                    {
+                        // Duplicate found; generate a unique name.
+                        string newFileName = GetUniqueFileName(originalFileName);
+                        duplicateMsg = $" Duplicate detected, renamed: {newFileName}";
+                        finalFileName = newFileName;
+                    }
+
+                    // Create the VideoUpload using the final file name.
+                    VideoUpload vu = new VideoUpload { FileName = finalFileName, Data = fileData };
 
                     // Try to enqueue the video.
                     bool enqueued = videoQueue.TryEnqueue(vu);
                     string responseMsg;
                     if (!enqueued)
                     {
-                        // File dropped because the queue is full
-                        responseMsg = $"QUEUE_FULL: Dropping file: {fileName}";
+                        // File dropped because the queue is full.
+                        responseMsg = $"QUEUE_FULL: Dropping file: {originalFileName}";
                     }
                     else
                     {
-                        responseMsg = $"OK: File accepted: {fileName}";
+                        // File accepted (or duplicate detected and renamed)
+                        if (!string.IsNullOrEmpty(duplicateMsg))
+                        {
+                            responseMsg = $"DUPLICATE: {originalFileName}{duplicateMsg}";
+                        }
+                        else
+                        {
+                            responseMsg = $"OK: File accepted: {originalFileName}";
+                        }
                     }
 
-                    // Send final response after processing
+                    // Send final response to the producer.
                     byte[] response = Encoding.UTF8.GetBytes(responseMsg);
                     ns.Write(response, 0, response.Length);
                     ns.Flush();
@@ -336,6 +357,23 @@ namespace STDISCM_ProblemSet3_Consumer
             {
                 client.Close();
             }
+        }
+
+        private string GetUniqueFileName(string originalFileName)
+        {
+            string folder = "UploadedVideos";
+            string fileNameWithoutExt = Path.GetFileNameWithoutExtension(originalFileName);
+            string extension = Path.GetExtension(originalFileName);
+            string newFileName = originalFileName;
+            int copyNumber = 1;
+
+            // Loop until you find a file name that does not exist
+            while (File.Exists(Path.Combine(folder, newFileName)))
+            {
+                newFileName = $"{fileNameWithoutExt}_copy{copyNumber}{extension}";
+                copyNumber++;
+            }
+            return newFileName;
         }
 
         // Helper method to read an exact number of bytes from the stream.
