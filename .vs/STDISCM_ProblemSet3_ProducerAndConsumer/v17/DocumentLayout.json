@@ -7,8 +7,16 @@
       "RelativeMoniker": "D:0:0:{87A90868-7389-4B7B-A389-2C43B3B53DD2}|STDISCM_ProblemSet3_Consumer\\STDISCM_ProblemSet3_Consumer.csproj|solutionrelative:stdiscm_problemset3_consumer\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{D9ECBB6B-6496-4443-BC34-DDD12B4A761E}|STDISCM_ProblemSet3_Producer\\STDISCM_ProblemSet3_Producer.csproj|c:\\users\\daniel\\documents\\github\\stdiscm_producerandconsumer\\stdiscm_problemset3_producer\\producer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{D9ECBB6B-6496-4443-BC34-DDD12B4A761E}|STDISCM_ProblemSet3_Producer\\STDISCM_ProblemSet3_Producer.csproj|C:\\Users\\Daniel\\Documents\\GitHub\\STDISCM_ProducerAndConsumer\\stdiscm_problemset3_producer\\producer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D9ECBB6B-6496-4443-BC34-DDD12B4A761E}|STDISCM_ProblemSet3_Producer\\STDISCM_ProblemSet3_Producer.csproj|solutionrelative:stdiscm_problemset3_producer\\producer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87A90868-7389-4B7B-A389-2C43B3B53DD2}|STDISCM_ProblemSet3_Consumer\\STDISCM_ProblemSet3_Consumer.csproj|c:\\users\\daniel\\documents\\github\\stdiscm_producerandconsumer\\stdiscm_problemset3_consumer\\previewform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{87A90868-7389-4B7B-A389-2C43B3B53DD2}|STDISCM_ProblemSet3_Consumer\\STDISCM_ProblemSet3_Consumer.csproj|solutionrelative:stdiscm_problemset3_consumer\\previewform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87A90868-7389-4B7B-A389-2C43B3B53DD2}|STDISCM_ProblemSet3_Consumer\\STDISCM_ProblemSet3_Consumer.csproj|c:\\users\\daniel\\documents\\github\\stdiscm_producerandconsumer\\stdiscm_problemset3_consumer\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{87A90868-7389-4B7B-A389-2C43B3B53DD2}|STDISCM_ProblemSet3_Consumer\\STDISCM_ProblemSet3_Consumer.csproj|solutionrelative:stdiscm_problemset3_consumer\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,8 +26,34 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 3,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "PreviewForm.cs",
+              "DocumentMoniker": "C:\\Users\\Daniel\\Documents\\GitHub\\STDISCM_ProducerAndConsumer\\STDISCM_ProblemSet3_Consumer\\PreviewForm.cs",
+              "RelativeDocumentMoniker": "STDISCM_ProblemSet3_Consumer\\PreviewForm.cs",
+              "ToolTip": "C:\\Users\\Daniel\\Documents\\GitHub\\STDISCM_ProducerAndConsumer\\STDISCM_ProblemSet3_Consumer\\PreviewForm.cs",
+              "RelativeToolTip": "STDISCM_ProblemSet3_Consumer\\PreviewForm.cs",
+              "ViewState": "AQIAAAUAAAAAAAAAAAAswCkAAAAiAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-08T10:25:50.988Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\Daniel\\Documents\\GitHub\\STDISCM_ProducerAndConsumer\\STDISCM_ProblemSet3_Consumer\\Program.cs",
+              "RelativeDocumentMoniker": "STDISCM_ProblemSet3_Consumer\\Program.cs",
+              "ToolTip": "C:\\Users\\Daniel\\Documents\\GitHub\\STDISCM_ProducerAndConsumer\\STDISCM_ProblemSet3_Consumer\\Program.cs",
+              "RelativeToolTip": "STDISCM_ProblemSet3_Consumer\\Program.cs",
+              "ViewState": "AQIAAB8AAAAAAAAAAAAgwBoAAAAwAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-08T08:57:56.497Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Document",
               "DocumentIndex": 1,
@@ -28,7 +62,7 @@
               "RelativeDocumentMoniker": "STDISCM_ProblemSet3_Producer\\Producer.cs",
               "ToolTip": "C:\\Users\\Daniel\\Documents\\GitHub\\STDISCM_ProducerAndConsumer\\STDISCM_ProblemSet3_Producer\\Producer.cs",
               "RelativeToolTip": "STDISCM_ProblemSet3_Producer\\Producer.cs",
-              "ViewState": "AQIAAIYAAAAAAAAAAAAwwAAAAAAAAAAA",
+              "ViewState": "AQIAAE8AAAAAAAAAAAAUwOUAAAAkAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-04-08T05:21:33.691Z",
               "EditorCaption": ""
@@ -41,7 +75,7 @@
               "RelativeDocumentMoniker": "STDISCM_ProblemSet3_Consumer\\MainForm.cs",
               "ToolTip": "C:\\Users\\Daniel\\Documents\\GitHub\\STDISCM_ProducerAndConsumer\\STDISCM_ProblemSet3_Consumer\\MainForm.cs",
               "RelativeToolTip": "STDISCM_ProblemSet3_Consumer\\MainForm.cs",
-              "ViewState": "AQIAAKQBAAAAAAAAAAAgwL8BAABcAAAA",
+              "ViewState": "AQIAAKQBAAAAAAAAAAAvwLABAAAJAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-04-08T05:28:33.62Z",
               "EditorCaption": ""

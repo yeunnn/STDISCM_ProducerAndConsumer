@@ -433,7 +433,10 @@ namespace STDISCM_ProblemSet3_Consumer
         }
 
         /*
-        * Worker thread that processes the video queue by saving videos to disk and updating the UI
+        * Processes the video queue by saving videos to disk and updating the UI
+        * Continuously dequeues video data from the shared queue,
+        * writes it to the "UploadedVideos" directory, and updates the ListView
+        * on the UI thread to display newly saved videos.
         */
         private void ProcessQueue()
         {
@@ -462,6 +465,8 @@ namespace STDISCM_ProblemSet3_Consumer
 
         /*
         * Loads existing videos from the "UploadedVideos" folder into the ListView
+        * Scans the "UploadedVideos" directory for files and adds them
+        * to the ListView so users can see previously uploaded videos on startup.
         */
         private void LoadExistingVideos()
         {
