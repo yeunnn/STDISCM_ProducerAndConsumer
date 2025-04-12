@@ -360,7 +360,7 @@ namespace STDISCM_ProblemSet3_Consumer
                         File.Delete(tempInputFile);
                     }
 
-                    // ✅ Hash the file content to detect duplicates.
+                    // Hash the file content to detect duplicates.
                     string fileHash = ComputeSHA256(fileData);
                     string responseMsg = "";
 
@@ -420,6 +420,13 @@ namespace STDISCM_ProblemSet3_Consumer
             }
         }
 
+        /*
+        * Computes the SHA-256 hash of the provided byte array.
+        *
+        * @param data - The byte array to compute the hash for
+        *
+        * @return A lowercase hexadecimal string representation of the SHA-256 hash
+        */
         private string ComputeSHA256(byte[] data)
         {
             using (var sha256 = SHA256.Create())

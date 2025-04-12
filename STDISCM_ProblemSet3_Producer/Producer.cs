@@ -1,9 +1,6 @@
 ﻿// Argamosa, Daniel Cedric (S14)
 // Donato, Adriel Joseph (S12)
 
-// See https://aka.ms/new-console-template for more information
-// Console.WriteLine("Hello, World!");
-
 using System;
 using System.IO;
 using System.Net;

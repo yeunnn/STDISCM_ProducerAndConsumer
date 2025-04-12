@@ -1,0 +1,18 @@
+[1st Half Code Explanations]
+0:12 - Network Setup
+0:49 - File Preparation
+1:16 - Producer Threading
+1:48 - Consumer Receives Files
+2:27 - File Compression through FFmpeg
+2:37 - Hashing Duplicate Check & Response Messages
+2:53 - Consumer Thread Implementation
+
+[2nd Half Test Case Demo]
+4:30 - Input Validation
+4:47 - Video Player UI
+5:00 - Consumer Test Case 1
+5:52 - Video Preview on Hover & Video Playback
+6:42 - Consumer Test Case 2 (Queue Dropping)
+7:50 - File Compression Outcome
+8:40 - Consumer Test Case 3
+9:38 - Duplicate Checking
