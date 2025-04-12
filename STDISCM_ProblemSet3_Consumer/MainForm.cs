@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -7,7 +7,8 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using WMPLib;
-using AxWMPLib; // Be sure to add COM Reference for Windows Media Player
+using System.Security.Cryptography;
+using AxWMPLib;
 
 namespace STDISCM_ProblemSet3_Consumer
 {
@@ -95,6 +96,10 @@ namespace STDISCM_ProblemSet3_Consumer
 
         // PreviewForm
         private PreviewForm previewForm = null;
+
+        // For duplicate checking
+        private static HashSet<string> knownHashes = new HashSet<string>();
+        private static readonly object hashLock = new object();
 
         public MainForm(int consumerThreadsCount, int queueCapacity, int listeningPort)
         {
@@ -340,53 +345,66 @@ namespace STDISCM_ProblemSet3_Consumer
                     string compressionMsg = "";
                     if (fileSize > threshold)
                     {
-                        // Generate a unique temporary file name to avoid collisions.
                         string safeFileName = Path.GetFileName(originalFileName);
                         string uniqueTempName = $"{Path.GetFileNameWithoutExtension(safeFileName)}_{Guid.NewGuid()}{Path.GetExtension(safeFileName)}";
                         string tempInputFile = Path.Combine(Path.GetTempPath(), uniqueTempName);
 
                         File.WriteAllBytes(tempInputFile, fileData);
 
-                        // Call CompressVideo with the new out parameter for error/status info.
                         if (CompressVideo(tempInputFile, out byte[] newFileData, out long newSize, out compressionMsg))
                         {
                             fileData = newFileData;
                             fileSize = newSize;
                         }
-                        // Delete the temporary input file.
+
                         File.Delete(tempInputFile);
                     }
 
-                    // Duplicate detection: Check if a file with the same name already exists in "UploadedVideos"
-                    string finalFileName = originalFileName;
-                    string filePath = Path.Combine("UploadedVideos", finalFileName);
-                    string duplicateMsg = "";
-                    if (File.Exists(filePath))
+                    // ✅ Hash the file content to detect duplicates.
+                    string fileHash = ComputeSHA256(fileData);
+                    string responseMsg = "";
+
+                    lock (hashLock)
                     {
-                        // Duplicate found; generate a unique name.
-                        string newFileName = GetUniqueFileName(originalFileName);
-                        duplicateMsg = $" Duplicate detected, renamed: {newFileName}";
-                        finalFileName = newFileName;
+                        if (knownHashes.Contains(fileHash))
+                        {
+                            // Duplicate detected - reject the upload
+                            responseMsg = $"DUPLICATE_CONTENT: Video {originalFileName} already uploaded under different name";
+                            byte[] duplicateResponse = Encoding.UTF8.GetBytes(responseMsg);
+                            ns.Write(duplicateResponse, 0, duplicateResponse.Length);
+                            ns.Flush();
+                            return;
+                        }
                     }
 
-                    // Create the VideoUpload object using the final file name.
-                    VideoUpload vu = new VideoUpload { FileName = finalFileName, Data = fileData };
+                    // Proceed to queue the video
+                    string finalFileName = originalFileName;
+                    string filePath = Path.Combine("UploadedVideos", finalFileName);
 
-                    // Attempt to enqueue the video.
+                    if (File.Exists(filePath))
+                    {
+                        finalFileName = GetUniqueFileName(originalFileName);
+                    }
+
+                    VideoUpload vu = new VideoUpload { FileName = finalFileName, Data = fileData };
                     bool enqueued = videoQueue.TryEnqueue(vu);
-                    string responseMsg = "";
+
                     if (!enqueued)
                     {
                         responseMsg = $"QUEUE_FULL: Dropping file: {originalFileName}";
                     }
                     else
                     {
-                        responseMsg = !string.IsNullOrEmpty(duplicateMsg)
-                            ? $"DUPLICATE: {originalFileName}{duplicateMsg}{compressionMsg}"
-                            : $"OK: File accepted: {originalFileName}{compressionMsg}";
+                        // Only store the hash after successful enqueue
+                        lock (hashLock)
+                        {
+                            knownHashes.Add(fileHash);
+                        }
+
+                        responseMsg = $"OK: File accepted: {originalFileName}{compressionMsg}";
                     }
 
-                    // Send final response to the producer.
+                    // Send final response
                     byte[] response = Encoding.UTF8.GetBytes(responseMsg);
                     ns.Write(response, 0, response.Length);
                     ns.Flush();
@@ -394,11 +412,20 @@ namespace STDISCM_ProblemSet3_Consumer
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error handling client: " + ex.Message);
+                Console.WriteLine("Error handling client: " + ex);
             }
             finally
             {
                 client.Close();
+            }
+        }
+
+        private string ComputeSHA256(byte[] data)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                byte[] hash = sha256.ComputeHash(data);
+                return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
             }
         }
 
