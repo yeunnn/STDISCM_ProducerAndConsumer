@@ -124,8 +124,9 @@ namespace STDISCM_ProblemSet3_Producer
         }
 
         /*
-        * Sends a file to the consumer over the network
-        * Compresses the file if it exceeds 20MB before sending
+        * Sends a file to the consumer over the network.
+        * Reads the file data and sends header (filename length, filename, and file size) 
+        * followed by the file data.
         *
         * @param filePath - The file path to be sent
         *
@@ -143,25 +144,6 @@ namespace STDISCM_ProblemSet3_Producer
                 byte[] fileData = File.ReadAllBytes(filePath);
                 long fileSize = fileData.Length;
 
-                // Compression threshold: 20 MB
-                const long threshold = 20 * 1024 * 1024;
-                bool compressed = false;
-                if (fileSize > threshold)
-                {
-                    // Call the separate video compression function
-                    if (CompressVideo(filePath, out byte[] newFileData, out long newSize))
-                    {
-                        fileData = newFileData;
-                        fileSize = newSize;
-                        compressed = true;
-                        Console.WriteLine($"\nVideo above 20MB, file {originalFileName} was compressed. New size: {(fileSize / (1024.0 * 1024.0)):0.00} MB");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"\nCompression failed for file {originalFileName}. Proceeding without compression.");
-                    }
-                }
-
                 byte[] fileNameLengthBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(fileNameLength));
                 byte[] fileSizeBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(fileSize));
 
@@ -170,16 +152,17 @@ namespace STDISCM_ProblemSet3_Producer
                     client.Connect(consumerIP, consumerPort);
                     using (NetworkStream ns = client.GetStream())
                     {
-                        // Send header
+                        // Send header (filename length, filename, file size)
                         ns.Write(fileNameLengthBytes, 0, fileNameLengthBytes.Length);
                         ns.Write(fileNameBytes, 0, fileNameBytes.Length);
                         ns.Write(fileSizeBytes, 0, fileSizeBytes.Length);
+                        ns.Flush();
 
-                        // Send file data immediately
+                        // Send file data
                         ns.Write(fileData, 0, fileData.Length);
                         ns.Flush();
 
-                        // Then wait for a response (e.g., OK or QUEUE_FULL)
+                        // Wait for a response from the consumer
                         byte[] responseBuffer = new byte[100];
                         int bytesRead = ns.Read(responseBuffer, 0, responseBuffer.Length);
                         string response = Encoding.UTF8.GetString(responseBuffer, 0, bytesRead);
@@ -190,63 +173,6 @@ namespace STDISCM_ProblemSet3_Producer
             catch (Exception ex)
             {
                 Console.WriteLine($"Error sending file {filePath}: {ex.Message}");
-            }
-        }
-
-        /*
-        * Compresses a video file using ffmpeg to reduce its size if it exceeds a certain threshold
-        *
-        * @param inputPath - Path to the video file to be compressed
-        * @param compressedData - The compressed video data
-        * @param newSize - The size of the compressed video data
-        *
-        * @return true if compression is successful, false if compression fails
-        */
-        static bool CompressVideo(string inputPath, out byte[] compressedData, out long newSize)
-        {
-            // Path to ffmpeg.exe inside the repo structure
-            string ffmpegPath = Path.Combine(Directory.GetCurrentDirectory(), "FFMPEG", "bin", "ffmpeg.exe");
-
-            // Check if ffmpeg exists at the specified location
-            if (!File.Exists(ffmpegPath))
-            {
-                compressedData = null;
-                newSize = 0;
-                return false;
-            }
-
-            string tempOutputFile = Path.Combine(Path.GetTempPath(), Path.GetFileName(inputPath));
-            var ffmpegProcess = new System.Diagnostics.Process();
-            ffmpegProcess.StartInfo.FileName = ffmpegPath;
-
-            // -i "inputPath" : input file.
-            // -vcodec libx264 -crf 28: re-encode with H.264 using CRF 28 (lower quality = smaller size).
-            // -preset fast: faster encoding.
-            // -acodec copy: copy audio without re-encoding.
-
-            string arguments = $"-i \"{inputPath}\" -vcodec libx264 -crf 28 -preset fast -acodec copy \"{tempOutputFile}\"";
-            ffmpegProcess.StartInfo.Arguments = arguments;
-            ffmpegProcess.StartInfo.CreateNoWindow = true;
-            ffmpegProcess.StartInfo.UseShellExecute = false;
-            ffmpegProcess.StartInfo.RedirectStandardError = true;
-            ffmpegProcess.Start();
-
-            // FFmpeg outputs logs to stderr
-            string ffmpegOutput = ffmpegProcess.StandardError.ReadToEnd();
-            ffmpegProcess.WaitForExit();
-
-            if (File.Exists(tempOutputFile))
-            {
-                compressedData = File.ReadAllBytes(tempOutputFile);
-                newSize = compressedData.LongLength;
-                File.Delete(tempOutputFile);
-                return true;
-            }
-            else
-            {
-                compressedData = null;
-                newSize = 0;
-                return false;
             }
         }
     }

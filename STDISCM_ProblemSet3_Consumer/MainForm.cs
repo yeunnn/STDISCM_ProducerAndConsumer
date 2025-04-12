@@ -307,6 +307,13 @@ namespace STDISCM_ProblemSet3_Consumer
         *
         * @param client - The TcpClient representing the connection to the producer
         */
+        /*
+* Handles an individual client upload by receiving the video file,
+* compressing it if it exceeds 20 MB, performing duplicate detection, 
+* and enqueuing it for processing.
+*
+* @param client - The TcpClient representing the connection to the producer
+*/
         private void HandleClient(TcpClient client)
         {
             try
@@ -328,9 +335,31 @@ namespace STDISCM_ProblemSet3_Consumer
                     if (longBuffer == null) return;
                     long fileSize = IPAddress.NetworkToHostOrder(BitConverter.ToInt64(longBuffer, 0));
 
-                    // Now, read the file data.
+                    // Read the file data.
                     byte[] fileData = ReadExact(ns, (int)fileSize);
                     if (fileData == null) return;
+
+                    // Compression: If the file is larger than 10 MB, compress it using FFmpeg.
+                    const long threshold = 10 * 1024 * 1024;
+                    if (fileSize > threshold)
+                    {
+                        // Write the raw data to a temporary file.
+                        string tempInputFile = Path.Combine(Path.GetTempPath(), originalFileName);
+                        File.WriteAllBytes(tempInputFile, fileData);
+
+                        // Call CompressVideo to compress the temp file.
+                        if (CompressVideo(tempInputFile, out byte[] newFileData, out long newSize))
+                        {
+                            fileData = newFileData;
+                            fileSize = newSize;
+                            Console.WriteLine($"\nVideo above 10MB, file {originalFileName} was compressed on consumer. New size: {(fileSize / (1024.0 * 1024.0)):0.00} MB");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"\nCompression failed for file {originalFileName} on consumer. Proceeding without compression.");
+                        }
+                        File.Delete(tempInputFile);
+                    }
 
                     // Duplicate detection: Check if a file with the same name already exists in "UploadedVideos"
                     string finalFileName = originalFileName;
@@ -338,7 +367,6 @@ namespace STDISCM_ProblemSet3_Consumer
                     string duplicateMsg = "";
                     if (File.Exists(filePath))
                     {
-                        // Duplicate found; generate a unique name.
                         string newFileName = GetUniqueFileName(originalFileName);
                         duplicateMsg = $" Duplicate detected, renamed: {newFileName}";
                         finalFileName = newFileName;
@@ -347,25 +375,20 @@ namespace STDISCM_ProblemSet3_Consumer
                     // Create the VideoUpload using the final file name.
                     VideoUpload vu = new VideoUpload { FileName = finalFileName, Data = fileData };
 
-                    // Try to enqueue the video.
+                    // Attempt to enqueue the video.
                     bool enqueued = videoQueue.TryEnqueue(vu);
                     string responseMsg;
                     if (!enqueued)
                     {
-                        // File dropped because the queue is full.
                         responseMsg = $"QUEUE_FULL: Dropping file: {originalFileName}";
+                        Console.WriteLine(responseMsg);
                     }
                     else
                     {
-                        // File accepted (or duplicate detected and renamed)
-                        if (!string.IsNullOrEmpty(duplicateMsg))
-                        {
-                            responseMsg = $"DUPLICATE: {originalFileName}{duplicateMsg}";
-                        }
-                        else
-                        {
-                            responseMsg = $"OK: File accepted: {originalFileName}";
-                        }
+                        responseMsg = !string.IsNullOrEmpty(duplicateMsg)
+                            ? $"DUPLICATE: {originalFileName}{duplicateMsg}"
+                            : $"OK: File accepted: {originalFileName}";
+                        Console.WriteLine(responseMsg);
                     }
 
                     // Send final response to the producer.
@@ -383,6 +406,62 @@ namespace STDISCM_ProblemSet3_Consumer
                 client.Close();
             }
         }
+
+        /*
+* Compresses a video file using ffmpeg to reduce its size if it exceeds a certain threshold
+*
+* @param inputPath - Path to the video file to be compressed
+* @param compressedData - The compressed video data
+* @param newSize - The size of the compressed video data
+*
+* @return true if compression is successful, false if compression fails
+*/
+        static bool CompressVideo(string inputPath, out byte[] compressedData, out long newSize)
+        {
+            // Path to ffmpeg.exe inside the repo structure
+            string ffmpegPath = Path.Combine(Directory.GetCurrentDirectory(), "FFMPEG", "bin", "ffmpeg.exe");
+
+            if (!File.Exists(ffmpegPath))
+            {
+                compressedData = null;
+                newSize = 0;
+                return false;
+            }
+
+            string tempOutputFile = Path.Combine(Path.GetTempPath(), Path.GetFileName(inputPath));
+            var ffmpegProcess = new System.Diagnostics.Process();
+            ffmpegProcess.StartInfo.FileName = ffmpegPath;
+
+            // -i "inputPath" : input file.
+            // -vcodec libx264 -crf 28: re-encode with H.264 using CRF 28 (lower quality = smaller size).
+            // -preset fast: faster encoding.
+            // -acodec copy: copy audio without re-encoding.
+            string arguments = $"-i \"{inputPath}\" -vcodec libx264 -crf 28 -preset fast -acodec copy \"{tempOutputFile}\"";
+            ffmpegProcess.StartInfo.Arguments = arguments;
+            ffmpegProcess.StartInfo.CreateNoWindow = true;
+            ffmpegProcess.StartInfo.UseShellExecute = false;
+            ffmpegProcess.StartInfo.RedirectStandardError = true;
+            ffmpegProcess.Start();
+
+            // Capture FFmpeg logs
+            string ffmpegOutput = ffmpegProcess.StandardError.ReadToEnd();
+            ffmpegProcess.WaitForExit();
+
+            if (File.Exists(tempOutputFile))
+            {
+                compressedData = File.ReadAllBytes(tempOutputFile);
+                newSize = compressedData.LongLength;
+                File.Delete(tempOutputFile);
+                return true;
+            }
+            else
+            {
+                compressedData = null;
+                newSize = 0;
+                return false;
+            }
+        }
+
 
         /*
         * Generates a unique file name if a file with the same name already exists in the "UploadedVideos" folder
