@@ -1,6 +1,6 @@
 Note: Change your file path and id address to match your setup
 
-1. Standard Procedure
+1. Standard Procedure (Queue Size: 10, 2 Directories)
 
 192.168.1.14
 9000
@@ -8,7 +8,7 @@ Note: Change your file path and id address to match your setup
 C:\Users\Daniel\Documents\GitHub\STDISCM_ProducerAndConsumer\Test Cases\TC1_1
 C:\Users\Daniel\Documents\GitHub\STDISCM_ProducerAndConsumer\Test Cases\TC1_2
 
-2. Too Many for Queue
+2. Too Many for Queue (Queue Size: 3, 2 Directories)
 
 192.168.1.14
 9000
@@ -16,7 +16,7 @@ C:\Users\Daniel\Documents\GitHub\STDISCM_ProducerAndConsumer\Test Cases\TC1_2
 C:\Users\Daniel\Documents\GitHub\STDISCM_ProducerAndConsumer\Test Cases\TC2_1
 C:\Users\Daniel\Documents\GitHub\STDISCM_ProducerAndConsumer\Test Cases\TC2_2
 
-3. Too Many for Queue (Singular)
+3. Too Many for Queue (Queue Size: 1, 1 Directories)
 
 192.168.1.14
 9000
